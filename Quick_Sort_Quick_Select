@@ -1,0 +1,118 @@
+import java.util.*;
+//Entropy-optimal sorting. 
+//Dijkstra's solution
+public class Solution {
+	Random random=new Random();
+	public void ThreeWayPartiotion(int[] nums, int key){
+		int lo=0, i=0, hi=nums.length-1;
+		while(i<=hi){
+			if(nums[i]<key){
+				swap(nums,lo,i);
+				lo++;
+				i++;
+			}else if(nums[i]>key){
+				swap(nums, i, hi);
+				hi--;
+			}else{
+				i++;
+			}
+		}
+	}
+	public int pivot(int[] nums, int keyIndex){
+		int key=nums[keyIndex];
+		int lo=0, i=0, hi=nums.length-1;
+		swap(nums,keyIndex,hi);
+		while(i<=hi-1){
+			if(nums[i]<=key){
+				swap(nums,lo,i);
+				lo++;
+			}
+				i++;
+		}
+		swap(nums,hi,lo);
+		return lo;
+	}
+	public int pivot(int[] nums, int left, int right, int keyIndex){
+		int key=nums[keyIndex];
+		int lo=left, i=left, hi=right;
+		swap(nums,keyIndex,hi);
+		while(i<=hi-1){
+			if(nums[i]<=key){
+				swap(nums,lo,i);
+				lo++;
+			}
+				i++;
+		}
+		swap(nums,hi,lo);
+		return lo;
+	}
+	public int partition(int[] nums, int keyIndex){
+		int lo=0-1, i=0, hi=nums.length-1, j=nums.length;
+		swap(nums,keyIndex,hi);
+		while(true){
+			while(nums[++i]<=nums[hi])
+				if(i==hi)  break;
+			while(nums[hi]<=nums[--j])
+				if(j==lo) break;
+			if(i>=j) break;
+			swap(nums,i,j);
+		}
+		swap(nums,i,hi);
+		return i;
+	}
+	// Returns the k-th smallest element of list within left..right inclusive
+	  // (i.e. left <= k <= right).
+	  // The search space within the array is changing for each round - but the list
+	  // is still the same size. Thus, k does not need to be updated with each round.
+	private int quickSelect(int[] nums, int left, int right, int k){
+			if(left == right)        // If the list contains only one element,
+				return nums[left];  // return that element
+			int pivotIndex=left + random.nextInt(right - left);     // select a pivotIndex between left and right,
+            pivotIndex  = pivot(nums, left, right, pivotIndex);
+            		// The pivot is in its final sorted position
+            if(k==pivotIndex)
+            	return nums[k];
+            else if (k < pivotIndex)
+                 return quickSelect(nums, left, pivotIndex - 1, k);
+            else
+            	 return quickSelect(nums, pivotIndex + 1, right, k);
+	}
+	private int iterativeQuickSelect(int[] nums, int left, int right, int k){
+		while(true){
+			if(left == right)        // If the list contains only one element,
+				return nums[left];  // return that element
+			int pivotIndex=left + random.nextInt(right - left);     // select a pivotIndex between left and right,
+			pivotIndex  = pivot(nums, left, right, pivotIndex);
+        		// The pivot is in its final sorted position
+			if(k==pivotIndex)
+				return nums[k];
+			else if (k < pivotIndex)
+				right=pivotIndex-1;
+			else
+				left=pivotIndex+1;
+		}
+}
+	private void swap(int[] nums, int i, int j){
+		int tmp=nums[i];
+		nums[i]=nums[j];
+		nums[j]=tmp;
+	}
+	public static void main(String[] args){
+		//int[] nums={2,3,3,2,4,7,7,2,4};
+		int[] nums={3,4,6,7,5,10,7,8};
+		int keyIndex=3;
+		//new Solution().ThreeWayPartiotion(nums, key);
+		new Solution().partition(nums, keyIndex);
+		System.out.println(Arrays.toString(nums));
+		int[] nums2 ={3,4,6,7,5,10,8};
+		new Solution().pivot(nums2, keyIndex);
+		System.out.println(Arrays.toString(nums2));
+		int[] nums3={3,4,6,7,5,10,9,9,8};
+		keyIndex=nums3.length-2;
+		int res=new Solution().quickSelect(nums3, 0, nums3.length-1, keyIndex-1);
+		System.out.println("The "+(nums3.length-keyIndex+1)+"-th largest element is "+res);
+		int[] nums4={3,4,6,7,5,10,9,9,8};
+		res=new Solution().iterativeQuickSelect(nums4, 0, nums4.length-1, keyIndex-1);
+		System.out.println("The "+(nums4.length-keyIndex+1)+"-th largest element is "+res);
+	}
+}
